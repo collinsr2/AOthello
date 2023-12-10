@@ -5,6 +5,9 @@ import json
 import socket
 
 # get_score(player, board)
+# player - identifier for player
+# board - board state being examined
+# ---------------------------------------
 # Produces the difference in score between players with current board state
 def get_score(player, board):
   opp = 0
@@ -26,6 +29,9 @@ def get_score(player, board):
 
 
 # get_move_list(player, board)
+# player - identifier for player
+# board - board state being examined
+# -------------------------------------
 # gets list of possible moves for player with a board state
 def get_move_list(player, board):
   opp = 0
@@ -38,7 +44,7 @@ def get_move_list(player, board):
   for i in range(8): # Finds played tiles of player and checks for flanks
     for j in range(8):
       if board[i][j] == player:
-        if i <=6 and board[i+1][j] == opp: # down
+        if i <=6 and board[i+1][j] == opp: # checks down
           k = i+2
           while k <= 7:
             if (board[k][j] == player):
@@ -50,7 +56,7 @@ def get_move_list(player, board):
                 moves[(k, j)] = 1
               break
             k += 1
-        if i >= 1 and board[i-1][j] == opp: # up
+        if i >= 1 and board[i-1][j] == opp: # checks up
           k = i-2
           while k >= 0:
             if (board[k][j] == player):
@@ -62,7 +68,7 @@ def get_move_list(player, board):
                 moves[(k, j)] = 1
               break
             k -= 1
-        if j <= 6 and board[i][j+1] == opp: # right
+        if j <= 6 and board[i][j+1] == opp: # checks right
           k = j+2
           while k <= 7:
             if (board[i][k] == player):
@@ -74,7 +80,7 @@ def get_move_list(player, board):
                 moves[(i, k)] = 1
               break
             k += 1
-        if j >= 1 and board[i][j-1] == opp: # left
+        if j >= 1 and board[i][j-1] == opp: # checks left
           k = j-2
           while k >= 0:
             if (board[i][k] == player):
@@ -86,7 +92,7 @@ def get_move_list(player, board):
                 moves[(i, k)] = 1
               break
             k -= 1
-        if i <= 6 and j <= 6 and board[i+1][j+1] == opp: #down right
+        if i <= 6 and j <= 6 and board[i+1][j+1] == opp: # checks down right
           k = i+2
           t = j+2
           while k <= 7 and t <= 7:
@@ -100,7 +106,7 @@ def get_move_list(player, board):
               break
             k += 1
             t += 1
-        if i >= 1 and j <= 6 and board[i-1][j+1] == opp: # up right
+        if i >= 1 and j <= 6 and board[i-1][j+1] == opp: # checks up right
           k = i-2
           t = j+2
           while k >= 0 and t <= 7:
@@ -114,7 +120,7 @@ def get_move_list(player, board):
               break
             k -= 1
             t += 1
-        if i <= 6 and j >= 1 and board[i+1][j-1] == opp: # down left
+        if i <= 6 and j >= 1 and board[i+1][j-1] == opp: # checks down left
           k = i+2
           t = j-2
           while k <= 7 and t >= 0:
@@ -128,7 +134,7 @@ def get_move_list(player, board):
               break
             k += 1
             t -= 1
-        if i >= 1 and j >= 1 and board[i-1][j-1] == opp: # up left
+        if i >= 1 and j >= 1 and board[i-1][j-1] == opp: # checks up left
           k = i-2
           t = j-2
           while k >= 0 and t >= 0:
@@ -145,7 +151,13 @@ def get_move_list(player, board):
   return moves
 
 
-# flips_possible(opp, board, move, d)
+# flips_possible(player, board, move, d, opp)
+# player - current player who has flips being examined
+# board - board state being examined
+# move - the move from which flanks are checked from
+# d - x and y value to indicate which direction is being checked for flips
+# opp - opposing player identifier
+# ---------------------------------------------------------
 # checks for possible flips with move
 def flips_possible(player, board, move, d, opp):
   if move[0] <= 7 and move[0] >= 0 and move[1] <= 7 and move[1] >= 0:
@@ -163,6 +175,12 @@ def flips_possible(player, board, move, d, opp):
 
 
 # flips(player, board, move, d, opp)
+# player - current player identifier
+# board - current board state being examined
+# move - location that flipped tiles start from
+# d - direction indicator for x and y axis to flip tokens
+# opp - identifier for opponent of player
+# ------------------------------------------------------
 # makes flips and returns the new board
 def flips(player, board, move, d, opp):
   x = move[0]
@@ -174,7 +192,12 @@ def flips(player, board, move, d, opp):
   
   return board
 
+
 # make_move(player, board, move)
+# player - identifier for player
+# board - current board state being examined
+# move - current move being made by player on the board
+# ------------------------------------------------------
 # makes move and changes board accordingly
 def make_move(player, board, move):
   board[move[0]][move[1]] = player
@@ -205,8 +228,11 @@ def make_move(player, board, move):
 
   return board
 
+
 # game_over(board)
-# determines if there is any more move to make in the game
+# board - board state being examined
+# -----------------------------------------------------------
+# determines if there is any more moves to make in the game (i.e. when the game over state is reached)
 def game_over(board):
   pList = get_move_list(1, board)
   oList = get_move_list(2, board)
@@ -214,7 +240,13 @@ def game_over(board):
     return True
   return False
 
+
 # minimax_val(player, board, curTurn, search)
+# player - player whos turn it was at the beginning of the minimax_val call
+# board - current board state being examined
+# curTurn - indicator for current player turn within the minimax iterations
+# search - how deep the current minimax search has gone (starts at 1, ends at 5)
+# ------------------------------------------------------------
 # finds best move based off val from current board state, looking search value deep
 def minimax_val(player, board, curTurn, search):
   opp = 0
@@ -251,6 +283,9 @@ def minimax_val(player, board, curTurn, search):
 
 
 # get_move_minimax(player, board)
+# player - current player indicator
+# board - current board state being examined
+# ------------------------------------------------------------
 # takes in current player and board state and uses minimax to determine opt move
 def get_move_minimax(player, board):
   movesCount = 0
@@ -282,137 +317,13 @@ def get_move_minimax(player, board):
 
 
 # get_move(player, board)
+# player - current player having move checked
+# board - current board state being examined
+# ------------------------------------------------------
 # Returns move for player to take
-# THIS FUNCTION WAS USED INITIALLY BEFORE REPLACED BY MINIMAX
-def get_move(player, board):
-  opp = 0
-  if player == 1:
-    opp = 2
-  else:
-    opp = 1
-  
-  # TODO determine valid moves
-  moves = {}
-  for i in range(8): # Finds played tiles of player and checks for flanks
-    for j in range(8):
-      if board[i][j] == player:
-        if i <=6 and board[i+1][j] == opp: # down
-          k = i+2
-          while k <= 7:
-            if (board[k][j] == player):
-              break
-            if (board[k][j] == 0):
-              if (k, j) in moves:
-                moves[(k, j)] += 1
-              else:
-                moves[(k, j)] = 1
-              break
-            k += 1
-        if i >= 1 and board[i-1][j] == opp: # up
-          k = i-2
-          while k >= 0:
-            if (board[k][j] == player):
-              break
-            if (board[k][j] == 0):
-              if (k, j) in moves:
-                moves[(k, j)] += 1
-              else:
-                moves[(k, j)] = 1
-              break
-            k -= 1
-        if j <= 6 and board[i][j+1] == opp: # right
-          k = j+2
-          while k <= 7:
-            if (board[i][k] == player):
-              break
-            if (board[i][k] == 0):
-              if (i, k) in moves:
-                moves[(i, k)] += 1
-              else:
-                moves[(i, k)] = 1
-              break
-            k += 1
-        if j >= 1 and board[i][j-1] == opp: # left
-          k = j-2
-          while k >= 0:
-            if (board[i][k] == player):
-              break
-            if (board[i][k] == 0):
-              if (i, k) in moves:
-                moves[(i, k)] += 1
-              else:
-                moves[(i, k)] = 1
-              break
-            k -= 1
-        if i <= 6 and j <= 6 and board[i+1][j+1] == opp: #down right
-          k = i+2
-          t = j+2
-          while k <= 7 and t <= 7:
-            if (board[k][t] == player):
-              break
-            if (board[k][t] == 0):
-              if (k, t) in moves:
-                moves[(k, t)] += 1
-              else:
-                moves[(k, t)] = 1
-              break
-            k += 1
-            t += 1
-        if i >= 1 and j <= 6 and board[i-1][j+1] == opp: # up right
-          k = i-2
-          t = j+2
-          while k >= 0 and t <= 7:
-            if (board[k][t] == player):
-              break
-            if (board[k][t] == 0):
-              if (k, t) in moves:
-                moves[(k, t)] += 1
-              else:
-                moves[(k, t)] = 1
-              break
-            k -= 1
-            t += 1
-        if i <= 6 and j >= 1 and board[i+1][j-1] == opp: # down left
-          k = i+2
-          t = j-2
-          while k <= 7 and t >= 0:
-            if (board[k][t] == player):
-              break
-            if (board[k][t] == 0):
-              if (k, t) in moves:
-                moves[(k, t)] += 1
-              else:
-                moves[(k, t)] = 1
-              break
-            k += 1
-            t -= 1
-        if i >= 1 and j >= 1 and board[i-1][j-1] == opp: # up left
-          k = i-2
-          t = j-2
-          while k >= 0 and t >= 0:
-            if (board[k][t] == player):
-              break
-            if (board[k][t] == 0):
-              if (k, t) in moves:
-                moves[(k, t)] += 1
-              else:
-                moves[(k, t)] = 1
-              break
-            k -= 1
-            t -= 1
-
-  # TODO determine best move
-  best = ()
-  if len(moves) == 0: # if player has no valid moves
-    return []
-  else:
-    bestC = 0
-    for i in moves:
-      if moves[i] > bestC:
-        bestC == moves[i]
-        best = i
-  
-  return [best[0], best[1]]
+# THIS FUNCTION WAS USED INITIALLY BEFORE REPLACED BY MINIMAX IMPLEMENTATION
+# Aspects of this initial implementaion can be found throughout the minimax implementation
+# such as get_move_list() function
 
 def prepare_response(move):
   response = '{}\n'.format(move).encode()
