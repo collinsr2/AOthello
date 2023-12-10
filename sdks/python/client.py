@@ -200,15 +200,16 @@ def flips(player, board, move, d, opp):
 # ------------------------------------------------------
 # makes move and changes board accordingly
 def make_move(player, board, move):
-  board[move[0]][move[1]] = player
+  x = move[0]
+  y = move[1]
+  
+  board[x][y] = player
   opp = 0
   if player == 1:
     opp = 2
   else:
     opp = 1
 
-  x = move[0]
-  y = move[1]
   if flips_possible(player, board, [x+1,y], [1,0], opp): # down
     board = flips(player, board, [x+1,y], [1,0], opp)
   if flips_possible(player, board, [x-1,y], [-1,0], opp): # up
